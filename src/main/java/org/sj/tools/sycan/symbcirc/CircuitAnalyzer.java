@@ -13,7 +13,8 @@ import org.sj.utils.math.symbol.SymbolMatrix;
 public class CircuitAnalyzer {
 
 
-	 int numVSrc = -1;
+	/** Number of unknown currents */
+	 int numUnknownCurr = -1;
 	 int numNodes = -1;
 
 	 /** suma del número de nodos y el de fuentes de tensión */
@@ -22,6 +23,7 @@ public class CircuitAnalyzer {
 
 	 SymbolMatrix M; 
 
+	 // TODO: Refactor?
 	 /* índices precalculados o dependientes del estado */
 	 int A, B;
 	 int j_A, j_B, i_A, i_B;
@@ -30,10 +32,8 @@ public class CircuitAnalyzer {
 	 int c_vgen=0;
 
 	 TrCompound trans;
-
-	 public void solve(Circuit circ) throws Exception
-	 {
-		  /* preprocesar lista de elementos */
+	 
+	 Circuit makeCompact(Circuit circ) {
 		  /* - (1) eliminar cortocircuitos y (2) defragmentar */
 		  //System.out.println("Paso 1. Eliminar cortocircuitos.");
 		  //System.out.println("Paso 2. Defragmentar.");
@@ -53,13 +53,47 @@ public class CircuitAnalyzer {
 		  //delSC.calc(circ);
 		  //Circuit noSC = delSC.getResult();
 		  //defrag.calc(noSC);
+
 		  // Circuit compact = defrag.getResult();
-		  Circuit compact = trans.getResult();
+		 return trans.getResult();
+	 }
+	 
+	 /**
+	  * Count non zero nodes, assuming that all are consecutive.
+	  * @param c 
+	  * @return number of non-zero nodes.
+	  */
+	 private int countNonZeroNodes(Circuit c) {
+		 return c.getMax();
+	 }
+	 
+	 boolean addsUnknownCurrent(Element elem) {
+		 return ((elem instanceof VoltSrc) ||
+					(elem instanceof VCVS) ||
+					(elem instanceof CCVS));
+	 }
+	 
+	 int countUnknownCurrents(Circuit c) {
+		 int count = 0;
+		  for(int i = 0; i < c.numElements(); i++) {
+				Element elem = c.get(i);
+				if(addsUnknownCurrent(elem))  {
+					 count++;
+				}
+		  }
+		 return count;
+	 }
+
+	 public void solve(Circuit circ) throws Exception
+	 {
+		  /* preprocesar lista de elementos */
+		  Circuit compact = makeCompact(circ);
 
 		  /* comprobar que no queda ningún nodo suelto */
 
 		  if(compact.checkUnbound()) {
 				//System.out.println(compact.toString());
+			  //TODO Specific exception
 				throw new Exception("Hay nodos sueltos en el circuito!");
 		  }
 
@@ -72,33 +106,19 @@ public class CircuitAnalyzer {
 		  //System.out.println("Paso 3. Calcular numero total de nodos.");
 
 		  /* N <- contar nodos distintos de 0 */
-
-		  // Este algoritmo asume que los nodos tienen asignados
-		  // índices consecutivos. Esto es necesario para el funcionamiento
-		  // del algoritmo.
-		  //   El algoritmo consiste simplemente en buscar el máximo índice
-		  // de nodo.
-		  numNodes = compact.getMax();
+		  numNodes = countNonZeroNodes(compact);
 
 		  if(numNodes <= 0) {
 				throw new Exception("El circuito no contiene nodos.");
 		  }
 
-		  /* contar fuentes de tensión */
-		  /* ya que introducen una incógnita cada uno */
+		  /* Count unknown currents .*/
+		  /* Voltage sources add one iach*/
 
-		  numVSrc = 0;
-		  for(int i = 0; i < compact.numElements(); i++) {
-				Element elem = compact.get(i);
-				if((elem instanceof VoltSrc) ||
-					(elem instanceof VCVS) ||
-					(elem instanceof CCVS)) {
-					 numVSrc++;
-				}
-		  }
+		numUnknownCurr = countUnknownCurrents(compact);
 
 		  /* número total de incógnitas */
-		  N = numNodes + numVSrc;
+		  N = numNodes + numUnknownCurr;
 		  //System.out.println(" - numNodes: "+numNodes);
 		  //System.out.println(" - numVsrc : "+numVSrc);
 		  //System.out.println(" - N       : "+N);
@@ -130,8 +150,8 @@ public class CircuitAnalyzer {
 				A = em.getNodeA() - 1;
 				B = em.getNodeB() - 1;
 
-				j_A = A + numVSrc;
-				j_B = B + numVSrc;
+				j_A = A + numUnknownCurr;
+				j_B = B + numUnknownCurr;
 				i_A = A + numNodes;
 				i_B = B + numNodes;
 
@@ -181,8 +201,8 @@ public class CircuitAnalyzer {
 		  int X = vcvs.getNodeX() - 1;
 		  int Y = vcvs.getNodeY() - 1;
 
-		  int j_X = X + numVSrc;
-		  int j_Y = Y + numVSrc;
+		  int j_X = X + numUnknownCurr;
+		  int j_Y = Y + numUnknownCurr;
 
 		  int i_vgen = c_vgen + numNodes;
 
@@ -229,8 +249,8 @@ public class CircuitAnalyzer {
 		  int X = vccs.getNodeX() - 1;
 		  int Y = vccs.getNodeY() - 1;
 
-		  int j_X = X + numVSrc;
-		  int j_Y = Y + numVSrc;
+		  int j_X = X + numUnknownCurr;
+		  int j_Y = Y + numUnknownCurr;
 
 		  Expression factor = vccs.getFactor();
 
@@ -346,11 +366,11 @@ public class CircuitAnalyzer {
 	 }
 
 	 public int getNumVoltSrc() {
-		  return numVSrc;
+		  return numUnknownCurr;
 	 }
 
 	 public int getNumNodes() {
-		  return numNodes;
+		  return numNodes+1;
 	 }
 
 
@@ -363,7 +383,7 @@ public class CircuitAnalyzer {
 				return new Expression(new Complex());
 		  }
 
-		  int j = numVSrc + i - 1;
+		  int j = numUnknownCurr + i - 1;
 		  //System.out.println("    getNodeVoltage("+i+"): ["+j +", "+N+"]: "+M.getValue(j,N).toString());
 		  return M.getValue(j, N);
 		  		  		  
@@ -384,6 +404,7 @@ public class CircuitAnalyzer {
 
 
 	 public void ASSERT(boolean condition, String errMsg) throws Exception {
+		 //TODO: Use fproper library
 		  if(!condition) {
 				throw new Exception(errMsg);
 		  }

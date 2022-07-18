@@ -1,0 +1,6 @@
+
+# Voltage Divisor
+
+R 1 0 R1
+R 2 1 R2
+VS 2 0 Vg

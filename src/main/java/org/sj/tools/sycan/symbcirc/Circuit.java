@@ -34,6 +34,8 @@ public class Circuit {
 
 	 /**
 	  * devuelve el mximo ndice de nodo
+	  * 
+	  * 
 	  */
 	 public int getMax() {
 		  if(max == -1) {
