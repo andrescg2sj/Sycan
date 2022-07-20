@@ -1,0 +1,9 @@
+
+# Basic operational amplifier
+
+
+VS 1 0 Vg
+VSC 2 1 VCS1
+R 3 2 R1
+R 2 0 R2
+UCS 0 3 UCS1

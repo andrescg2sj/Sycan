@@ -9,10 +9,11 @@ import org.sj.tools.sycan.symbcirc.CurrSrc;
 import org.sj.tools.sycan.symbcirc.VoltSrc;
 import org.sj.tools.sycan.symbcirc.VCCS;
 import org.sj.tools.sycan.symbcirc.VCVS;
+import org.sj.tools.sycan.symbcirc.VirtualShortCirc;
 import org.sj.tools.sycan.symbcirc.CCVS;
 import org.sj.tools.sycan.symbcirc.CCCS;
 import org.sj.tools.sycan.symbcirc.ShortCirc;
-
+import org.sj.tools.sycan.symbcirc.UnknownCurrSrc;
 import org.sj.utils.math.complex.Complex;
 
 import java.io.BufferedReader;
@@ -162,6 +163,13 @@ public class Parser {
 					 int branch = Integer.parseInt(tokens[3]);
  					 name = tokens[4];
 					 elem = new CCVS(A, B, name, branch);
+				} else if(type.equals("VSC")) {
+					//name = "VSC";
+					elem = new VirtualShortCirc(A,B);
+				} else if(type.equals("UCS")) {
+					//name = "VSC";
+					//TODO: Manage names
+					elem = new UnknownCurrSrc(A,B,"UCS");
 				} else {
 					 throw new Exception(filename+":"+numLine+
 												": Tipo no vlido: '"+ type+"'");

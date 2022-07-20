@@ -1,5 +1,7 @@
 package org.sj.tools.sycan.symbcirc;
 
+import java.util.Vector;
+
 //import java.util.Vector;
 
 /* TODO: comprobar transformaciones: defrag, delSC, defrag.
@@ -13,8 +15,13 @@ import org.sj.utils.math.symbol.SymbolMatrix;
 public class CircuitAnalyzer {
 
 
+	/** Number of voltage constraints */
+	 int numVoltConstr = 0;
 	/** Number of unknown currents */
-	 int numUnknownCurr = -1;
+	 int numUnknownCurr = 0;
+	 
+	 /** Unknown current variable */
+	 Vector<String> unknownCurrVars = new Vector<String>();
 	 int numNodes = -1;
 
 	 /** suma del número de nodos y el de fuentes de tensión */
@@ -30,6 +37,9 @@ public class CircuitAnalyzer {
 
 	 /** índice de la fuente de tensión actual */
 	 int c_vgen=0;
+
+	 /** index of current (present) unknown current variable*/
+	 int c_unkCurr=0;
 
 	 TrCompound trans;
 	 
@@ -67,21 +77,70 @@ public class CircuitAnalyzer {
 		 return c.getMax();
 	 }
 	 
-	 boolean addsUnknownCurrent(Element elem) {
+	 static boolean addsUnknownCurrent(Element elem) {
 		 return ((elem instanceof VoltSrc) ||
 					(elem instanceof VCVS) ||
-					(elem instanceof CCVS));
+					(elem instanceof CCVS) ||
+					(elem instanceof UnknownCurrSrc));
 	 }
 	 
-	 int countUnknownCurrents(Circuit c) {
-		 int count = 0;
+	 static boolean addsVoltageConstraint(Element elem) {
+		 return ((elem instanceof VoltSrc) ||
+					(elem instanceof VCVS) ||
+					(elem instanceof CCVS) ||
+					(elem instanceof VirtualShortCirc));
+	 }
+	 
+	 public static Vector<String> collectUnknownCurr(Circuit c) {
+		 //TODO
+		 Vector<String> vars = new Vector<String>();
+		  for(int i = 0; i < c.numElements(); i++) {
+				Element elem = c.get(i);
+				//boolean adds = addsUnknownCurrent(elem); 
+				//System.out.println("elem: "+elem.toString()+ " adds UCr:"+adds);
+				if(addsUnknownCurrent(elem))  {
+					//System.out.println("+UCr ");
+					vars.add(elem.getName());
+					//count++;
+				}
+		  }
+		  return vars;
+	 }
+	 
+	 public static int countUnknownCurr(Circuit c) {
+		 int count=0;
 		  for(int i = 0; i < c.numElements(); i++) {
 				Element elem = c.get(i);
 				if(addsUnknownCurrent(elem))  {
-					 count++;
+					//System.out.println("+UCr ");
+					count++;
 				}
 		  }
-		 return count;
+		  return count;
+	 }
+
+	 
+	 public static int countVoltageConstr(Circuit c) {
+		 int count = 0;
+		  for(int i = 0; i < c.numElements(); i++) {
+				Element elem = c.get(i);
+				//boolean adds = addsVoltageConstraint(elem); 
+				//System.out.println("elem: "+elem.toString()+ " adds VCn:"+adds);
+				if(addsVoltageConstraint(elem))  {
+					System.out.println("  +VCn ");
+					count++;
+				}
+		  }
+		  return count;
+	 }
+
+
+
+	 
+	 void calculateSystemParameters(Circuit c) {
+		 //collectUnknownCurr(c);
+		 this.numUnknownCurr = countUnknownCurr(c);
+		 this.numVoltConstr = countVoltageConstr(c);
 	 }
 
 	 public void solve(Circuit circ) throws Exception
@@ -115,13 +174,18 @@ public class CircuitAnalyzer {
 		  /* Count unknown currents .*/
 		  /* Voltage sources add one iach*/
 
-		numUnknownCurr = countUnknownCurrents(compact);
+		  calculateSystemParameters(compact);
+		  
+		  if(numUnknownCurr != numVoltConstr) {
+			  System.out.println("Warning! Unk.Curr="+numUnknownCurr +
+					  ", numVoltConstr="+numVoltConstr);
+		  }
 
 		  /* número total de incógnitas */
-		  N = numNodes + numUnknownCurr;
-		  //System.out.println(" - numNodes: "+numNodes);
-		  //System.out.println(" - numVsrc : "+numVSrc);
-		  //System.out.println(" - N       : "+N);
+		  N = numNodes + numUnknownCurr; 
+		  System.out.println(" - numNodes: "+numNodes);
+		  System.out.println(" - numUnk.Curr : "+numUnknownCurr);
+		  System.out.println(" - N       : "+N);
 
 		  /* crear la matriz del sistema, Nx(N+1) */
 		  M = new SymbolMatrix(N, N+1);
@@ -154,7 +218,7 @@ public class CircuitAnalyzer {
 				j_B = B + numUnknownCurr;
 				i_A = A + numNodes;
 				i_B = B + numNodes;
-
+				
 				if(em instanceof Admitance) {
 					 Admitance Y = (Admitance) em;
 					 //System.out.println(" * Y = "+ Y.getY());
@@ -165,6 +229,8 @@ public class CircuitAnalyzer {
 					 //System.out.println(" * VS = "+ VS.getV());
 					 addVoltSrc(VS);
  
+				} else if(em instanceof UnknownCurrSrc) {
+					 addUnknownCurrSrc((UnknownCurrSrc) em);
 				} else if(em instanceof CurrSrc) {
 					 CurrSrc I = (CurrSrc) em;
 					 //System.out.println(" * CS = "+ I.getI());
@@ -178,12 +244,15 @@ public class CircuitAnalyzer {
 					 VCVS vs = (VCVS) em;
 					 //System.out.println(" * VCVS = "+ vs.getFactor());
 					 addVCVS(vs);
-				}
+				} else if(em instanceof VirtualShortCirc) {
+					VirtualShortCirc vsc = (VirtualShortCirc) em;
+					addVirtualShortCirc(vsc);
+				} 
 		  }
 
 
-		  //System.out.println(" Matriz: ----------------------- ");
-		  //System.out.println(M.toString());
+		  System.out.println(" Matriz: ----------------------- ");
+		  System.out.println(M.toString());
 
 		  /* resolver */
 		  SymbolMatrix R = M.reducidaGaussJordan();
@@ -238,8 +307,8 @@ public class CircuitAnalyzer {
 				M.setValue(i_vgen, j_Y, v);
 		  }
 		  
-
 		  c_vgen++;
+		  System.out.println("c_vgen="+c_vgen);
 
 	 }
 
@@ -280,6 +349,50 @@ public class CircuitAnalyzer {
 				}
 		  }
 	 }
+	 
+	 private void addUnknownCurrSrc(UnknownCurrSrc ucs) {
+		  Expression v;
+		  //int i_vgen = c_vgen + numNodes;
+		  
+
+		  if(A > -1) {
+				/* submatriz de corrientes */
+				//ASSERT(M.getValue(A, c_vgen) != null, "null en matriz");
+				v = Expression.sum(M.getValue(A, c_unkCurr),
+										 ucs.getI().getOpposite());
+				M.setValue(A, c_unkCurr, v);
+
+				/* submatriz de tensiones */
+				/*
+				v = Expression.sum(M.getValue(i_vgen, j_A),
+										 new Expression(1));
+				M.setValue(i_vgen, j_A, v);
+				*/
+		  }
+
+		  if(B > -1) {
+				/* submatriz de corrientes */
+				v = Expression.sum(M.getValue(B, c_unkCurr),
+									ucs.getI());
+				M.setValue(B, c_unkCurr, v);
+
+				/* submatriz de tensiones */
+				/*
+				v = Expression.sum(M.getValue(i_vgen, j_B),
+										 new Expression(-1));
+				M.setValue(i_vgen, j_B, v);
+				*/
+		  }
+
+		  /* término independiente para ecuaciones de tensión */
+		  /*
+		  v = Expression.sum(M.getValue(i_vgen, N), VS.getV());
+		  M.setValue(i_vgen, N, v);
+		  */
+
+		  c_unkCurr++;
+	 }
+
 
 
 	 private void addCurrSrc(CurrSrc I) {
@@ -296,15 +409,61 @@ public class CircuitAnalyzer {
 				M.setValue(B, N, v);
 		  }
 	 }
+	 
+	 
+	 private void addVirtualShortCirc(VirtualShortCirc vsc) {
+		  Expression v;
+		  int i_vgen = c_vgen + numNodes;
+		  
+		  //TODO: Why could A or B be negative?
+		  if(A > -1) {
+				/* submatriz de corrientes */
+				//ASSERT(M.getValue(A, c_vgen) != null, "null en matriz");
+			  /*
+				v = Expression.sum(M.getValue(A, c_vgen),
+										 new Expression(-1));
+				M.setValue(A, c_vgen, v);*/
+
+				/* submatriz de tensiones */
+			  System.out.println("i_vgen="+i_vgen+", j_A="+j_A);
+				v = Expression.sum(M.getValue(i_vgen, j_A),
+										 new Expression(1));
+				M.setValue(i_vgen, j_A, v);
+		  }
+
+		  if(B > -1) {
+				/* submatriz de corrientes */
+			  /*
+				v = Expression.sum(M.getValue(B, c_vgen),
+										 new Expression(1));
+				M.setValue(B, c_vgen, v);
+				*/
+
+				/* submatriz de tensiones */
+				v = Expression.sum(M.getValue(i_vgen, j_B),
+										 new Expression(-1));
+				M.setValue(i_vgen, j_B, v);
+		  }
+
+		  /* término independiente para ecuaciones de tensión */
+		  //v = Expression.sum(M.getValue(i_vgen, N), VS.getV());
+		  //M.setValue(i_vgen, N, v);
+
+		  c_vgen++;
+
+	 }
+
+	 
 
 	 private void addVoltSrc(VoltSrc VS) {
 		  Expression v;
 		  int i_vgen = c_vgen + numNodes;
-
+		  
+		  //TODO: Why could A or B be negative?
 		  if(A > -1) {
 				/* submatriz de corrientes */
 				//ASSERT(M.getValue(A, c_vgen) != null, "null en matriz");
-				v = Expression.sum(M.getValue(A, c_vgen),
+				v = Expression.sum(M.getValue(A, c_unkCurr),
 										 new Expression(-1));
 				M.setValue(A, c_vgen, v);
 
@@ -316,7 +475,7 @@ public class CircuitAnalyzer {
 
 		  if(B > -1) {
 				/* submatriz de corrientes */
-				v = Expression.sum(M.getValue(B, c_vgen),
+				v = Expression.sum(M.getValue(B, c_unkCurr),
 										 new Expression(1));
 				M.setValue(B, c_vgen, v);
 
@@ -331,6 +490,7 @@ public class CircuitAnalyzer {
 		  M.setValue(i_vgen, N, v);
 
 		  c_vgen++;
+		  this.c_unkCurr++;
 
 	 }
 
@@ -383,6 +543,7 @@ public class CircuitAnalyzer {
 				return new Expression(new Complex());
 		  }
 
+		  //TODO: index calculation method
 		  int j = numUnknownCurr + i - 1;
 		  //System.out.println("    getNodeVoltage("+i+"): ["+j +", "+N+"]: "+M.getValue(j,N).toString());
 		  return M.getValue(j, N);
