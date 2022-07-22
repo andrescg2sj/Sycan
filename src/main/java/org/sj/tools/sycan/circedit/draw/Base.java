@@ -2,7 +2,9 @@ package org.sj.tools.sycan.circedit.draw;
 
 import org.sj.tools.sycan.circedit.Const;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 
 public class Base implements Const {
 
@@ -26,7 +28,7 @@ public class Base implements Const {
 	  *
 	  * @param p punto en coordenades de esta base
 	  */
-	 Point2D trans(Point2D p) {
+	 Point2D transform(Point2D p) {
 		  float x = (float) origin.getX();
 		  float y = (float) origin.getY();
 
@@ -49,11 +51,22 @@ public class Base implements Const {
 	 }
 
 
-	 public Point trans(Point p) {
+	 public Point transform(Point p) {
 		  Point2D q = new Point2D.Float((float) p.getX(), (float) p.getY());
-		  Point2D r = trans(q);
+		  Point2D r = transform(q);
 		  return new Point((int) r.getX(), (int) r.getY());
 	 }
+	 
+	 public Rectangle transform(Rectangle r) {
+		 Point2D top_left = new Point2D.Double(r.getMinX(), r.getMinY()); 
+		 Point2D bottom_right = new Point2D.Double(r.getMaxX(), r.getMaxY()); 
+		  Point2D trans_tl = transform(top_left);
+		  Point2D trans_br = transform(bottom_right);
+		  Rectangle2D rect = new Rectangle2D.Double(trans_tl.getX(), trans_tl.getY(),0,0);
+		  rect.add(trans_br);
+		  return rect.getBounds();
+	 }
+
 
 	 /**
 	  * Transformacin inversa.

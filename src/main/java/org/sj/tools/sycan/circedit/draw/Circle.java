@@ -25,7 +25,7 @@ public class Circle implements Drawable {
 
 
 	 public void draw(Graphics g, Base b) {
-		  Point2D d = b.trans(center);
+		  Point2D d = b.transform(center);
 
 		  g.drawOval((int) (d.getX() - radius), (int) (d.getY() - radius),
 						 (int) (2*radius), (int) (2*radius));

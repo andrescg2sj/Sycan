@@ -18,5 +18,5 @@ public abstract class Doc implements MessageReceiver {
 		view.sendMessage(View.MSG_REPAINT, null);
 	}
 		
-	public abstract Iterator<GraphicElement> getIterator();
+	public abstract Iterator<GraphicPart> getIterator();
 }

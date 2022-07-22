@@ -3,14 +3,14 @@ package org.sj.tools.sycan.circedit;
 import java.awt.Graphics;
 import java.awt.Point;
 
-public abstract class GraphicElement implements Const {
+public abstract class GraphicPart implements Const {
 
 	 protected String name;
 
 	 protected String type;
 
 
-	 public GraphicElement(String _name, String _type)
+	 public GraphicPart(String _name, String _type)
 	 {
 		  name = _name;
 		  type = _type;

@@ -10,10 +10,14 @@ Symbolic Circuit Analyzer
 $ mvn compile
 ```
 
-## Run
+## Run GUI
 
 ```
 $ ./circedit.sh
 ```
 
+Or:
 
+```
+$ java -classpath target/classes org.sj.tools.sycan.circedit.MainPrg
+```

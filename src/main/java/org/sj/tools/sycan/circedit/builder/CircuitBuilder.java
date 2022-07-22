@@ -14,10 +14,11 @@ import org.sj.utils.math.complex.Complex;
 import java.util.Vector;
 
 import org.sj.tools.sycan.circedit.Const;
-import org.sj.tools.sycan.circedit.GraphicElement;
+import org.sj.tools.sycan.circedit.GraphicPart;
 import org.sj.tools.sycan.circedit.GraphicTLElement;
 import org.sj.tools.sycan.circedit.GraphicShortCirc;
 import org.sj.tools.sycan.circedit.GraphicGround;
+import org.sj.tools.sycan.circedit.GraphicIdealOA;
 import org.sj.tools.sycan.circedit.GraphicNode;
 
 import org.sj.tools.sycan.symbcirc.Element;
@@ -27,6 +28,8 @@ import org.sj.tools.sycan.symbcirc.Inductor;
 import org.sj.tools.sycan.symbcirc.VoltSrc;
 import org.sj.tools.sycan.symbcirc.CurrSrc;
 import org.sj.tools.sycan.symbcirc.ShortCirc;
+import org.sj.tools.sycan.symbcirc.UnknownCurrSrc;
+import org.sj.tools.sycan.symbcirc.VirtualShortCirc;
 import org.sj.tools.sycan.symbcirc.Circuit;
 
 class NodeGroup implements Const {
@@ -268,14 +271,14 @@ class ExtNode {
 public class CircuitBuilder implements Const {
 
 	 /** lista original de elementos gráficos */
-	 Vector<GraphicElement> geList;
+	 Vector<GraphicPart> geList;
 
 
 	 /* --- datos intermedios: --- */
 
 	 ExtNode enodes[][];
 
-	 public CircuitBuilder(Vector<GraphicElement> vge) {
+	 public CircuitBuilder(Vector<GraphicPart> vge) {
 		  geList = vge;
 	 }
 
@@ -294,7 +297,7 @@ public class CircuitBuilder implements Const {
 		  
 		  enodes = new ExtNode[N][]; 
 		  for(int i = 0; i < N; i++) {
-				GraphicElement ge = geList.get(i);
+				GraphicPart ge = geList.get(i);
 				GraphicNode nodes[] = ge.getNodes();
 
 				ExtNode en[] = new ExtNode[ nodes.length];
@@ -329,7 +332,7 @@ public class CircuitBuilder implements Const {
 				/* buscar alguna conexión masa en el grupo */
 				for(int j = 0; j < ngs[i].getSize(); j++) {
 					 int k = ngs[i].getElem(j);
-					 GraphicElement ge = geList.get(k);
+					 GraphicPart ge = geList.get(k);
 
 					 if(ge instanceof GraphicGround) {
 						  id = 0;
@@ -360,7 +363,7 @@ public class CircuitBuilder implements Const {
 
 		  for(int i = 0; i < geList.size(); i++) {
 
-				GraphicElement ge = geList.get(i);
+				GraphicPart ge = geList.get(i);
 				if(ge instanceof GraphicGround) {
 					 continue;
 				}
@@ -388,6 +391,16 @@ public class CircuitBuilder implements Const {
 						  elems.add( new CurrSrc(A, B, new Complex(1.0, 0.0),
 														 tle.getName()));
 					 }
+				} else if(ge instanceof GraphicIdealOA) {
+					//GraphicIdealOA gioa = (GraphicIdealOA) ge;
+					 int A = enodes[i][NODE_A].id_group;
+					 int B = enodes[i][NODE_B].id_group;
+					 int out = enodes[i][2].id_group;
+
+					elems.add( new VirtualShortCirc(A, B));
+					//TODO: Use NameManager to ensure unique name.
+					elems.add( new UnknownCurrSrc(0, out, "UI_"+ ge.getName()));
+					 
 				} else if(ge instanceof GraphicShortCirc) {
 					 int A = enodes[i][NODE_A].id_group;
 					 int B = enodes[i][NODE_B].id_group;
@@ -419,7 +432,7 @@ public class CircuitBuilder implements Const {
 		  }
 
 		  for(int i = 0; i < geList.size(); i++) {
-				GraphicElement ge = geList.get(i);
+				GraphicPart ge = geList.get(i);
 
 				if(ge instanceof GraphicTLElement) {
 					 GraphicTLElement tle = (GraphicTLElement) ge;
@@ -463,7 +476,7 @@ public class CircuitBuilder implements Const {
 
 		  System.out.println("Graphic Circuit:");
 		  for(int i = 0; i < geList.size(); i++) {
-				GraphicElement ge = geList.get(i);
+				GraphicPart ge = geList.get(i);
 				System.out.println(ge.toString());
 		  }
 	 }

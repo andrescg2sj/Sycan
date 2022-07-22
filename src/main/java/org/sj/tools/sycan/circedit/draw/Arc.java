@@ -31,7 +31,7 @@ public class Arc implements Drawable, Const {
 
 
 	 public void draw(Graphics g, Base b) {
-		  Point2D d = b.trans(center);
+		  Point2D d = b.transform(center);
 
 		  int offAngle = 0;
 		  switch(b.dir) {

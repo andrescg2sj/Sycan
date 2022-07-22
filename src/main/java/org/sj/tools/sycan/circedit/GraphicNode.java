@@ -3,6 +3,7 @@ package org.sj.tools.sycan.circedit;
 import java.awt.Graphics;
 import java.awt.Point;
 
+//TODO: Could this be used in drawing?
 public class GraphicNode implements Const {
 	 Point position;
 
@@ -20,5 +21,9 @@ public class GraphicNode implements Const {
 
 	 public Point getPosition() {
 		  return position;
+	 }
+	 
+	 public boolean isInside(Point p) {
+		 return position.distance(p) < NODE_RAD;
 	 }
 }

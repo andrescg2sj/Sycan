@@ -1,6 +1,8 @@
 package org.sj.tools.sycan.circedit.draw;
 
 import java.awt.Point;
+import java.awt.Rectangle;
+
 import org.sj.tools.sycan.circedit.Const;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -22,6 +24,7 @@ public class DrawingFactory implements Const {
 		  drg.put(TYPE_VOLT_SRC,  createVoltSrc());
 		  drg.put(TYPE_CURR_SRC,  createCurrSrc());
 		  drg.put(TYPE_GROUND,  createGround());
+		  drg.put(TYPE_IDEAL_OA, createIdealOA());
 	 }
 
 	 public static DrawingFactory getInstance()
@@ -192,6 +195,38 @@ public class DrawingFactory implements Const {
 		  d.add(new Line(-COMP_SIZE/4, 3*COMP_SIZE/4,
 							  COMP_SIZE/4, 3*COMP_SIZE/4));
 		  return new Drawing(d);
+	 }
+	 
+	 protected static Drawing createIdealOA() {
+		 //TODO: add methods to Drawing, instead of creating a separate Vector...
+		 Vector<Drawable> d = new Vector<Drawable>(8,4);
+		 Vector<Point> p = new Vector<Point>(3);
+		 Rectangle bounds = new Rectangle(-ELEM_SIZE/3,-ELEM_SIZE/2, 
+				 ELEM_SIZE, 2*ELEM_SIZE/3);
+		 
+		 /* nodes */
+		 d.add(new Circle(-ELEM_SIZE/2, GRID_SIZE,  NODE_RAD));
+		 d.add(new Circle(-ELEM_SIZE/2, -GRID_SIZE, NODE_RAD));
+		 d.add(new Circle(ELEM_SIZE/2, 0, NODE_RAD));
+		 p.add(new Point(-ELEM_SIZE/2, GRID_SIZE));
+		 p.add(new Point(-ELEM_SIZE/2, -GRID_SIZE));
+		 p.add(new Point(ELEM_SIZE/2, 0));
+		 
+		 /* connections */
+		 d.add(new Line(-ELEM_SIZE/2, GRID_SIZE,  -ELEM_SIZE/3, GRID_SIZE));
+		 d.add(new Line(-ELEM_SIZE/2, -GRID_SIZE, -ELEM_SIZE/3, -GRID_SIZE));
+		 d.add(new Line(ELEM_SIZE/2, 0, ELEM_SIZE/3,0));
+		
+		 /* triangle */
+		 d.add(new Line(-ELEM_SIZE/3,-ELEM_SIZE/2, ELEM_SIZE/3,0));
+		 d.add(new Line(-ELEM_SIZE/3,ELEM_SIZE/2, ELEM_SIZE/3,0));
+		 d.add(new Line(-ELEM_SIZE/3,ELEM_SIZE/2, -ELEM_SIZE/3,-ELEM_SIZE/2));
+		 
+		 /* polarity of inputs */
+		 
+		 
+		 return new Drawing(d, p, bounds);
+		 	
 	 }
 	 
 }

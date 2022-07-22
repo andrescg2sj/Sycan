@@ -11,7 +11,7 @@ import java.awt.Graphics;
 /**
  * 
  */
-public class GraphicGround extends GraphicElement  {
+public class GraphicGround extends GraphicPart  {
 
 	 /** posicion */
 	 protected Point center;

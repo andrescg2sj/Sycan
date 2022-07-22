@@ -10,14 +10,14 @@ import java.awt.Point;
 import java.awt.Graphics;
 
 /**
- * Elemento grfico con dos patas
+ * Graphic Two-legged element
  */
-public class GraphicTLElement extends GraphicElement  {
+public class GraphicTLElement extends GraphicPart  {
 
-	 /** posicion */
+	 /** position*/
 	 protected Point center;
 
-	 /** direccion del componente */
+	 /** direction in which the component is drawn */
 	 protected int dir;
 
 
@@ -31,11 +31,23 @@ public class GraphicTLElement extends GraphicElement  {
 
 
 	 public int getNode(Point p) {
+		 
 		  Base b = new Base(center, dir);
 		  Point q = b.inverse(p);
 		  int dx = (int) q.getX();
 		  int dy = (int) q.getY();
+		  
+		 /*
+		 GraphicNode nodes[] = getNodes();
+		 for(int i=0; i<nodes.length; i++) {
+			 if(nodes[i].isInside(p)) {
+				 return i;
+			 }
+		 }*/
+		 
 
+		  
+		  //TODO: Refactor
 		  if((Math.abs(dy) <= NODE_RAD) &&
 			  (Math.abs(dx) >= (ELEM_SIZE/2-NODE_RAD)) &&
 			  (Math.abs(dx) <= (ELEM_SIZE/2+NODE_RAD)) ) {
@@ -74,14 +86,14 @@ public class GraphicTLElement extends GraphicElement  {
 
 	 public Point getNodeAPos() {
 		  Base b = new Base(center, dir);
-		  Point q = b.trans(new Point(ELEM_SIZE/2, 0));
+		  Point q = b.transform(new Point(ELEM_SIZE/2, 0));
 		  return q;
 	 }
 
 
 	 public Point getNodeBPos() {
 		  Base b = new Base(center, dir);
-		  Point q = b.trans(new Point(-ELEM_SIZE/2, 0));
+		  Point q = b.transform(new Point(-ELEM_SIZE/2, 0));
 		  return q;
 	 }
 

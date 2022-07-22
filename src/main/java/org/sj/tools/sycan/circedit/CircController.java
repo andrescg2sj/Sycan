@@ -32,6 +32,7 @@ public class CircController extends ControllerImpl
 	 public static final int ACT_DRAW_SHORTCIRC  = 101;
 	 public static final int ACT_DRAW_GROUND  = 102;
 	 public static final int ACT_PLOT = 103;
+	 public static final int ACT_DRAW_IDEAL_OA  = 104;
 
 	 public static final int DRAW_SHORTCIRC_NUM_STATES = 3;
 
@@ -111,6 +112,12 @@ public class CircController extends ControllerImpl
 				setAction(ACT_DRAW_TL_ELEM);
 				setCreateType(TYPE_CURR_SRC);
 				break;
+		  case C_ACT_DRAW_IDEAL_OA:
+				setAction(ACT_DRAW_IDEAL_OA);
+				//setCreateType(TYPE_IDEAL_OA);
+				break;
+
+				
 		  case C_ACT_DRAW_GROUND:
 				setAction(ACT_DRAW_GROUND);
 				//setCreateType(TYPE_CURR_SRC);
@@ -210,7 +217,7 @@ public class CircController extends ControllerImpl
 				cdoc.createTLElement(fixed, create_type);
 				break;
 		  case ACT_DRAW_SHORTCIRC:
-				/* TODO: mejorar? */
+				/* TODO: improve ? */
 				state++;
 				switch(state) {
 				case 1:
@@ -226,7 +233,7 @@ public class CircController extends ControllerImpl
 					 break;
 
 				case 3:
-					 /**  crear Cortocircuito */
+					 /**  create short-circuit */
 					 cdoc.createShortCirc(A, B, sc_draw_up);
 					 state = 0;
 					 break;
@@ -238,8 +245,11 @@ public class CircController extends ControllerImpl
 				break;
 
 		  case ACT_DRAW_GROUND:
-				/* TODO : mejorar? */
+				/* TODO : improve? */
 				cdoc.createGround(fixed);
+				break;
+		  case ACT_DRAW_IDEAL_OA:
+				cdoc.createIdealOA(fixed);
 				break;
 
 		  case ACT_DELETE:

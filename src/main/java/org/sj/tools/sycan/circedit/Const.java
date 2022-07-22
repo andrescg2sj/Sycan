@@ -37,6 +37,7 @@ public interface Const {
 
 	 public static final String TYPE_SHORT_CIRC = "ShortCirc";
 	 public static final String TYPE_GROUND = "Ground";
+	 public static final String TYPE_IDEAL_OA = "IdealOA";
 
 
 	 public static final int SIZE = 80;
@@ -49,12 +50,15 @@ public interface Const {
 	 public static final	int C_ACT_DRAW_TL_ELEM_VS   = 1003;
 	 public static final int C_ACT_DRAW_TL_ELEM_CS   = 1004;
 	 public static final int C_ACT_DRAW_TL_SHORTCIRC = 1006;
-	 public static final	int C_ACT_DRAW_GROUND       = 1007;
-	 public static final	int C_ACT_DELETE            = 1008;
-	 public static final	int C_ACT_ROTATE            = 1009;
-	 public static final	int C_ACT_PLOT              = 1010;
-	 public static final	int C_ACT_CLEAR             = 1011;
-	 public static final	int C_ACT_SOLVE_CIRC        = 1012;
+	 public static final	int C_ACT_DRAW_IDEAL_OA       = 1007;
+	 public static final	int C_ACT_DRAW_GROUND       = 1008;
+	 
+	 public static final	int C_ACT_DELETE            = 1021;
+	 public static final	int C_ACT_ROTATE            = 1022;
+	 public static final	int C_ACT_PLOT              = 1023;
+	 public static final	int C_ACT_CLEAR             = 1024;
+	 public static final	int C_ACT_SOLVE_CIRC        = 1025;
+
 
 	 public static final	int C_ACT_EXIT              = 2001;
 	 public static final	int C_ACT_EXPORT_CIRC       = 2002;

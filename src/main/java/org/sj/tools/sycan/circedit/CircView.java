@@ -49,10 +49,10 @@ public class CircView extends View implements Const {
 				}
 		  }
 
-		  Iterator<GraphicElement> it = getCircDoc().getIterator();
+		  Iterator<GraphicPart> it = getCircDoc().getIterator();
 
 		  while(it.hasNext()) {
-				GraphicElement ge = it.next();
+				GraphicPart ge = it.next();
 
 				ge.draw(g);
 		  }

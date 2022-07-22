@@ -29,8 +29,8 @@ public class Line implements Drawable {
 
 
 	 public void draw(Graphics g, Base b) {
-		  Point2D q1 = b.trans(p1);
-		  Point2D q2 = b.trans(p2);
+		  Point2D q1 = b.transform(p1);
+		  Point2D q2 = b.transform(p2);
 		  g.drawLine((int) q1.getX(), (int) q1.getY(),
 						 (int) q2.getX(), (int) q2.getY());
 	 }

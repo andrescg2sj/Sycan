@@ -23,7 +23,8 @@ public class ToolBar extends Panel implements Const {
 	 Button btnSC; // Short Circuit
 	 Button btnVS; // Voltage Source
 	 Button btnCS; // Current Source
-	 Button btnGND; // Current Source
+	 Button btnIdealOA; // Ideal Operational Amplifier
+	 Button btnGND; // Ground
 	 Button btnDelete; // Borrar
 	 Button btnRotate; // Girar
 	 //	 Button btnSolve; // Resolver
@@ -43,6 +44,7 @@ public class ToolBar extends Panel implements Const {
 		  btnSC = new Button("Short Circ.");
 		  btnVS = new Button("Volt. Src.");
 		  btnCS = new Button("Curr. Src.");
+		  btnIdealOA = new Button("Ideal O.A.");
 		  btnGND = new Button("Ground");	
 		  btnDelete = new Button("Delete");
 		  btnRotate = new Button("Rotate");
@@ -57,6 +59,7 @@ public class ToolBar extends Panel implements Const {
 		  add(btnSC);
 		  add(btnVS);
 		  add(btnCS);	
+		  add(btnIdealOA);	
 		  add(btnGND);
 		  add(btnDelete);
 		  add(btnRotate);
@@ -70,6 +73,7 @@ public class ToolBar extends Panel implements Const {
 		  ctr.assign(btnVS, C_ACT_DRAW_TL_ELEM_VS);
 		  ctr.assign(btnCS, C_ACT_DRAW_TL_ELEM_CS);
 		  ctr.assign(btnSC, C_ACT_DRAW_TL_SHORTCIRC);
+		  ctr.assign(btnIdealOA, C_ACT_DRAW_IDEAL_OA);
 		  ctr.assign(btnGND, C_ACT_DRAW_GROUND);
 		  ctr.assign(btnDelete, C_ACT_DELETE);
 		  ctr.assign(btnRotate, C_ACT_ROTATE);

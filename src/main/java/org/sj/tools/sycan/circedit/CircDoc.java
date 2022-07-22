@@ -17,7 +17,7 @@ import org.sj.utils.math.complex.Complex;
 
 public class CircDoc extends Doc implements Const {
 
-	 LinkedList<GraphicElement> elements;
+	 LinkedList<GraphicPart> elements;
 
 	 NameManager nameMan;
 
@@ -42,7 +42,7 @@ public class CircDoc extends Doc implements Const {
 	 boolean modified;
 
 	 public CircDoc() {
-		  elements = new LinkedList<GraphicElement>();
+		  elements = new LinkedList<GraphicPart>();
 		  lastNode = 0;
 		  nameMan = new NameManager();
 		  nameMan.register(TYPE_RESISTOR, "R");
@@ -51,6 +51,7 @@ public class CircDoc extends Doc implements Const {
 		  nameMan.register(TYPE_VOLT_SRC, "VS");
 		  nameMan.register(TYPE_CURR_SRC, "CS");
 		  nameMan.register(TYPE_SHORT_CIRC, "SC");
+		  nameMan.register(TYPE_IDEAL_OA, "IOA");
 
 		  modified = false;
 	 }
@@ -67,7 +68,7 @@ public class CircDoc extends Doc implements Const {
 
 	 /* --- Mtodos heredados --- */
 
-	 public Iterator<GraphicElement> getIterator()
+	 public Iterator<GraphicPart> getIterator()
 	 {
 		  return elements.iterator();
 	 }
@@ -95,7 +96,7 @@ public class CircDoc extends Doc implements Const {
 
 
 	 public void createGround(Point center) {
-		  GraphicElement E =	new GraphicGround(center);
+		  GraphicPart E =	new GraphicGround(center);
 		  elements.add(E);
 		  getCircView().updateView();
 		  setModifiedFlag();
@@ -103,7 +104,7 @@ public class CircDoc extends Doc implements Const {
 
 
 	 public void createShortCirc(Point A,  Point B, boolean draw_up) {
-		  GraphicElement E =	new GraphicShortCirc(generateName(TYPE_SHORT_CIRC),
+		  GraphicPart E =	new GraphicShortCirc(generateName(TYPE_SHORT_CIRC),
 																A, B, draw_up);
 		  elements.add(E);
 		  getCircView().updateView();
@@ -114,7 +115,7 @@ public class CircDoc extends Doc implements Const {
 	 public void createTLElement(Point p, String type) {
 		  
 		  
-		  GraphicElement E =	new GraphicTLElement(generateName(type), type, p,
+		  GraphicPart E =	new GraphicTLElement(generateName(type), type, p,
 																DIR_UP);
 
 		  elements.add(E);
@@ -154,10 +155,10 @@ public class CircDoc extends Doc implements Const {
 	  * Busca el objeto que tenga el punto p dentro
 	  */
 	 int seek(Point p) throws Exception {
-		  Iterator<GraphicElement> it = elements.iterator();
+		  Iterator<GraphicPart> it = elements.iterator();
 		  int i = 0;
 		  while(it.hasNext()) {
-				GraphicElement ge = it.next();
+				GraphicPart ge = it.next();
 				if(ge.isInside(p)) {
 					 return i;
 				}
@@ -183,7 +184,7 @@ public class CircDoc extends Doc implements Const {
 	 void seekAndRotate(Point p) {
 		  try {
 				int i = seek(p);
-				GraphicElement ge = elements.get(i);
+				GraphicPart ge = elements.get(i);
 				ge.changeDir();
 				setModifiedFlag();
 				getCircView().updateView();
@@ -277,7 +278,7 @@ public class CircDoc extends Doc implements Const {
 
 	 protected void buildCircuit() throws Exception
 	 {
-		  Vector<GraphicElement> elems = new Vector<GraphicElement>();
+		  Vector<GraphicPart> elems = new Vector<GraphicPart>();
 		  elems.addAll(elements);
 		  System.out.println(" Build: ..-----------------------");
 		  circBuilder = new CircuitBuilder(elems);
@@ -315,6 +316,17 @@ public class CircDoc extends Doc implements Const {
 		  //		  int id = can.getNumNodes();
 		  //		  Expression exp = can.getNodeVoltage(id);
 	 }
+
+
+	public void createIdealOA(Point p) {
+		// TODO Auto-generated method stub
+		  GraphicPart E = new GraphicIdealOA(generateName(TYPE_IDEAL_OA), p);
+
+		  elements.add(E);
+		  getCircView().updateView();
+		  setModifiedFlag();
+
+	}
 
 
 }

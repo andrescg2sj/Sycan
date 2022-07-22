@@ -14,7 +14,7 @@ import java.awt.Graphics;
 /**
  * Línea o nodo.
  */
-public class GraphicShortCirc extends GraphicElement {
+public class GraphicShortCirc extends GraphicPart {
 
 
 	 /* === Atributos clave === */
