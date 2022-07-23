@@ -14,10 +14,9 @@ public class AboutWindow extends SimpleWindow {
     public AboutWindow() {
 	super("About...");
 
-	String text = "SCAN: Symbolic Circuit Analyzer\r\n" +
-	    "Developed in LSI B-105 - Technical University of Madrid\r\n" +
-	    "Alvaro Araujo Pinto - araujo@die.upm.es\r\n" +
-	    "Andres C. Gonzalez Gonzalez - agonzalez@die.upm.es";
+	String text = "Sycan: Symbolic Circuit Analyzer\r\n" +
+	    "Andres C. Gonzalez Gonzalez - andresg@jesuitas.es\r\n" +
+			"andrescg2sj.github.com";
 
 	TextArea ta = new TextArea(text);
 	ta.setEditable(false);
