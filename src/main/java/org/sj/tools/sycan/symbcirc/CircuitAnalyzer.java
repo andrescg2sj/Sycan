@@ -359,7 +359,7 @@ public class CircuitAnalyzer {
 				/* submatriz de corrientes */
 				//ASSERT(M.getValue(A, c_vgen) != null, "null en matriz");
 				v = Expression.sum(M.getValue(A, c_unkCurr),
-										 ucs.getI().getOpposite());
+						new Expression(1));
 				M.setValue(A, c_unkCurr, v);
 
 				/* submatriz de tensiones */
@@ -373,7 +373,7 @@ public class CircuitAnalyzer {
 		  if(B > -1) {
 				/* submatriz de corrientes */
 				v = Expression.sum(M.getValue(B, c_unkCurr),
-									ucs.getI());
+						new Expression(-1));
 				M.setValue(B, c_unkCurr, v);
 
 				/* submatriz de tensiones */

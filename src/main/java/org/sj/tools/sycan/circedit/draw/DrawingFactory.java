@@ -216,6 +216,13 @@ public class DrawingFactory implements Const {
 		 d.add(new Line(-ELEM_SIZE/2, GRID_SIZE,  -ELEM_SIZE/3, GRID_SIZE));
 		 d.add(new Line(-ELEM_SIZE/2, -GRID_SIZE, -ELEM_SIZE/3, -GRID_SIZE));
 		 d.add(new Line(ELEM_SIZE/2, 0, ELEM_SIZE/3,0));
+		 
+		 /* signs - poles */
+		 d.add(new Line(-GRID_SIZE, GRID_SIZE,  -GRID_SIZE/2, GRID_SIZE));
+
+		 d.add(new Line(-GRID_SIZE*3/4, -GRID_SIZE*5/4,  -GRID_SIZE*3/4, -GRID_SIZE*3/4));
+
+		d.add(new Line(-GRID_SIZE, -GRID_SIZE,  -GRID_SIZE/2, -GRID_SIZE));
 		
 		 /* triangle */
 		 d.add(new Line(-ELEM_SIZE/3,-ELEM_SIZE/2, ELEM_SIZE/3,0));
