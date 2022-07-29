@@ -4,6 +4,12 @@ Symbolic Circuit Analyzer
 
 This program allows the user to draw an electronic circuit and analyze it, calculating the tensions on each node. This is not done numerically but symbolically, providing the mathematical expressions as a function of the parameters.
 
+### Demo
+
+Please, see [this video](https://www.youtube.com/watch?v=al8JVXpaRwk).
+
+### Details
+
 Expressions are calculated in Laplace's domain, which provides similar expressions to Fourier's domain or frequency domain. That means that, when capacitive and inductive elements are present in the circuit, the expression is a function of the *s* variable. Although Laplace's domain covers the whole complex plane, the imaginary axis provides the frequency response of the circuit, through the following equation:
 
 *s* = *2πjf*  = *jω*
