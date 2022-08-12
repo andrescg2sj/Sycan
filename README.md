@@ -6,7 +6,7 @@ This program allows the user to draw an electronic circuit and analyze it, calcu
 
 ### Demo
 
-Please, see [this video](https://www.youtube.com/watch?v=al8JVXpaRwk).
+Please, see [this video](https://www.youtube.com/watch?v=dhsbcg2nKy8).
 
 ### Details
 
