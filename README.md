@@ -26,6 +26,10 @@ The program is currently still a prototype. Some of its limitations are:
 * Ideal operational amplifiers are analyzed assuming negative feedback. If you analyze a circuit with positive feedback, the program may provide a meaningless result.
 * When drawing the circuit, you need to connect elements through their extremes (the small circumferences). For example, you cannot connect an element to some point in the middle of a wire.
 
+## About the code
+
+Sycan is a project under development. Many parts of the code are old and need some maintainance, refactoring, and translation. Thank you for your patience.
+
 ## Download and run
 
 You can find the first release to the left of this text, or just [here](https://github.com/andrescg2sj/Sycan/releases/tag/v0.1.0).
